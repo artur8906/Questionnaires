@@ -23,6 +23,11 @@ namespace WepApi.Controllers
             return CreatedAtAction(nameof(GetQuestion), new { id }, null);
         }
 
+        private object GetQuestion()
+        {
+            throw new NotImplementedException();
+        }
+
         [HttpPost("{id:guid}/responses")]
         public async Task<IActionResult> SubmitResponse(Guid id, [FromBody] SubmitResponseDto dto)
         {

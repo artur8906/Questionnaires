@@ -1,7 +1,7 @@
-﻿using Core.Entities;
+﻿using Core.DTOs;
+using Core.Entities;
 using Core.Enums;
 using System.Text.Json;
-using WepApi.DTOs;
 
 namespace Infrastructure.Services
 {
