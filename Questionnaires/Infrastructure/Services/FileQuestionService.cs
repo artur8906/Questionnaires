@@ -95,36 +95,72 @@ namespace Infrastructure.Services
 
         public async Task SubmitResponseAsync(Guid questionId, SubmitResponseDto dto)
         {
-            var response = new QuestionResponse
+            var question = await GetQuestionByIdAsync(questionId) ?? throw new ArgumentException("Question not found.");
+
+            var id = Guid.NewGuid();
+
+            QuestionResponse response = question.Type switch
             {
-                Id = Guid.NewGuid(),
-                QuestionId = questionId,
-                RespondentId = dto.RespondentId
+                QuestionType.FiveStar => dto.RatingValue is null
+                    ? throw new ArgumentException("Rating is required.")
+                    : new FiveStarQuestionRespons(id, questionId, dto.RespondentId, dto.RatingValue.Value),
+
+                QuestionType.MultiSelect => dto.SelectedOptions is null || dto.SelectedOptions.Count < 2
+                    ? throw new ArgumentException("At least 2 options are required.")
+                    : new MultiSelectQuestionResponse(id, questionId, dto.RespondentId, dto.SelectedOptions),
+
+                QuestionType.SingleSelect => string.IsNullOrWhiteSpace(dto.SelectedOption)
+                    ? throw new ArgumentException("Option is required.")
+                    : new SingleSelectQuestionResponse(id, questionId, dto.RespondentId, dto.SelectedOption),
+
+                _ => throw new InvalidOperationException("Unsupported question type.")
             };
 
             await SaveResponseToFileAsync(response);
-        }
+}
 
         private async Task SaveResponseToFileAsync(QuestionResponse response)
         {
-            List<QuestionResponse> responses;
 
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+
+            List<QuestionResponse> responses;
             if (File.Exists(_responsesFilePath))
             {
                 var existingData = await File.ReadAllTextAsync(_responsesFilePath);
-            
+                responses = JsonConvert.DeserializeObject<List<QuestionResponse>>(existingData, settings) ?? new List<QuestionResponse>();
             }
             else
             {
                 responses = new List<QuestionResponse>();
             }
-
-
-
-            var jsonData = "null";
-
+            responses.Add(response);
+            var jsonData = JsonConvert.SerializeObject(responses, settings);
             await File.WriteAllTextAsync(_responsesFilePath, jsonData);
         }
-    }
 
+        public async Task<List<Question>> GetAllQuestionsAsync()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            };
+
+            if (!File.Exists(_questionsFilePath))
+                return new List<Question>();
+
+            var json = await File.ReadAllTextAsync(_questionsFilePath);
+            return JsonConvert.DeserializeObject<List<Question>>(json, settings) ?? new List<Question>();
+        }
+
+        public async Task<Question?> GetQuestionByIdAsync(Guid id)
+        {
+            var all = await GetAllQuestionsAsync();
+            return all.FirstOrDefault(q => q.Id == id);
+        }
+    }
 }
