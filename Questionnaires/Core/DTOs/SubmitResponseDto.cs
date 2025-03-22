@@ -1,4 +1,4 @@
-﻿namespace WepApi.DTOs
+﻿namespace Core.DTOs
 {
     public class SubmitResponseDto
     {

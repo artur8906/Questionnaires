@@ -1,6 +1,6 @@
 ﻿using Core.Enums;
 
-namespace WepApi.DTOs
+namespace Core.DTOs
 {
     public class CreateQuestionDto
     {

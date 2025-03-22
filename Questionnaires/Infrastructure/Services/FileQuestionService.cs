@@ -1,5 +1,4 @@
-﻿
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Enums;
 using System.Text.Json;
 using WepApi.DTOs;
@@ -8,11 +7,13 @@ namespace Infrastructure.Services
 {
     public class FileQuestionService
     {
-        private readonly string _filePath;
+        private readonly string _questionsFilePath;
+        private readonly string _responsesFilePath;
 
-        public FileQuestionService(string filePath)
+        public FileQuestionService(string questionsFilePath, string responsesFilePath)
         {
-            _filePath = filePath;
+            _questionsFilePath = questionsFilePath;
+            _responsesFilePath = responsesFilePath;
         }
 
         public async Task CreateQuestionAsync(Guid id, CreateQuestionDto dto)
@@ -52,9 +53,9 @@ namespace Infrastructure.Services
         {
             List<Question> questions;
 
-            if (File.Exists(_filePath))
+            if (File.Exists(_questionsFilePath))
             {
-                var existingData = await File.ReadAllTextAsync(_filePath);
+                var existingData = await File.ReadAllTextAsync(_questionsFilePath);
                 questions = JsonSerializer.Deserialize<List<Question>>(existingData,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true })
                     ?? new List<Question>();
@@ -69,7 +70,44 @@ namespace Infrastructure.Services
             var jsonData = JsonSerializer.Serialize(questions,
                 new JsonSerializerOptions { WriteIndented = true });
 
-            await File.WriteAllTextAsync(_filePath, jsonData);
+            await File.WriteAllTextAsync(_questionsFilePath, jsonData);
+        }
+
+        public async Task SubmitResponseAsync(Guid questionId, SubmitResponseDto dto)
+        {
+            var response = new QuestionResponse
+            {
+                Id = Guid.NewGuid(),
+                QuestionId = questionId,
+                RespondentId = dto.RespondentId,
+                Response = JsonSerializer.Serialize(dto)
+            };
+
+            await SaveResponseToFileAsync(response);
+        }
+
+        private async Task SaveResponseToFileAsync(QuestionResponse response)
+        {
+            List<QuestionResponse> responses;
+
+            if (File.Exists(_responsesFilePath))
+            {
+                var existingData = await File.ReadAllTextAsync(_responsesFilePath);
+                responses = JsonSerializer.Deserialize<List<QuestionResponse>>(existingData,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true })
+                    ?? new List<QuestionResponse>();
+            }
+            else
+            {
+                responses = new List<QuestionResponse>();
+            }
+
+            responses.Add(response);
+
+            var jsonData = JsonSerializer.Serialize(responses,
+                new JsonSerializerOptions { WriteIndented = true });
+
+            await File.WriteAllTextAsync(_responsesFilePath, jsonData);
         }
     }
 
