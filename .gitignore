@@ -3,3 +3,10 @@
 ################################################################################
 
 /.vs
+/Questionnaires/.vs/Questionnaires
+/Questionnaires/Core/bin/Debug/net8.0
+/Questionnaires/Core/obj/Debug/net8.0
+/Questionnaires/Infrastructure/obj
+/Questionnaires/WepApi/bin/Debug/net8.0
+/Questionnaires/WepApi/obj/Debug/net8.0
+/Questionnaires/WepApi/obj
