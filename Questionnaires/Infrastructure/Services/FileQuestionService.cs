@@ -1,15 +1,18 @@
 ﻿using Core.DTOs;
 using Core.Entities;
 using Core.Enums;
+using Core.Interfaces;
+using Newtonsoft.Json;
+using System;
 using System.Text.Json;
 
 namespace Infrastructure.Services
 {
-    public class FileQuestionService
+    public class FileQuestionService: IQuestionService
     {
         private readonly string _questionsFilePath;
         private readonly string _responsesFilePath;
-
+    
         public FileQuestionService(string questionsFilePath, string responsesFilePath)
         {
             _questionsFilePath = questionsFilePath;
@@ -51,25 +54,24 @@ namespace Infrastructure.Services
 
         private async Task SaveQuestionToFileAsync(Question question)
         {
-            List<Question> questions;
+             var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
 
+            List<Question> questions;
             if (File.Exists(_questionsFilePath))
             {
                 var existingData = await File.ReadAllTextAsync(_questionsFilePath);
-                questions = JsonSerializer.Deserialize<List<Question>>(existingData,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true })
-                    ?? new List<Question>();
+                questions = JsonConvert.DeserializeObject<List<Question>>(existingData, settings)?? new List<Question>();
             }
             else
             {
                 questions = new List<Question>();
             }
-
             questions.Add(question);
-
-            var jsonData = JsonSerializer.Serialize(questions,
-                new JsonSerializerOptions { WriteIndented = true });
-
+            var jsonData = JsonConvert.SerializeObject(questions, settings);
             await File.WriteAllTextAsync(_questionsFilePath, jsonData);
         }
 
@@ -79,8 +81,7 @@ namespace Infrastructure.Services
             {
                 Id = Guid.NewGuid(),
                 QuestionId = questionId,
-                RespondentId = dto.RespondentId,
-                Response = JsonSerializer.Serialize(dto)
+                RespondentId = dto.RespondentId
             };
 
             await SaveResponseToFileAsync(response);
@@ -93,19 +94,16 @@ namespace Infrastructure.Services
             if (File.Exists(_responsesFilePath))
             {
                 var existingData = await File.ReadAllTextAsync(_responsesFilePath);
-                responses = JsonSerializer.Deserialize<List<QuestionResponse>>(existingData,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true })
-                    ?? new List<QuestionResponse>();
+            
             }
             else
             {
                 responses = new List<QuestionResponse>();
             }
 
-            responses.Add(response);
 
-            var jsonData = JsonSerializer.Serialize(responses,
-                new JsonSerializerOptions { WriteIndented = true });
+
+            var jsonData = "null";
 
             await File.WriteAllTextAsync(_responsesFilePath, jsonData);
         }

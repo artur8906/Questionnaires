@@ -1,0 +1,20 @@
+[
+  {
+    "$type": "Core.Entities.FiveStarQuestion, Core",
+    "MinValue": 0,
+    "MaxValue": 0,
+    "Id": "8b20130f-b2f2-41fd-b609-d2414e44a38f",
+    "Title": "string",
+    "Type": 0
+  },
+  {
+    "$type": "Core.Entities.MultiSelectQuestion, Core",
+    "Options": [
+      "string",
+      "string2"
+    ],
+    "Id": "1a20130f-b2f2-41fd-b609-d2414e44a40f",
+    "Title": "string",
+    "Type": 1
+  }
+]

@@ -20,7 +20,7 @@ namespace WepApi.Controllers
         public async Task<IActionResult> CreateQuestion(Guid id, [FromBody] CreateQuestionDto dto)
         {
             await _questionService.CreateQuestionAsync(id, dto);
-            return CreatedAtAction(nameof(GetQuestion), new { id }, null);
+            return Ok(); 
         }
 
         private object GetQuestion()
@@ -34,5 +34,5 @@ namespace WepApi.Controllers
             await _questionService.SubmitResponseAsync(id, dto);
             return Ok();
         }
-           } 
+      } 
     }
