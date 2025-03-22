@@ -21,34 +21,52 @@ namespace Infrastructure.Services
 
         public async Task CreateQuestionAsync(Guid id, CreateQuestionDto dto)
         {
-            Question question = dto.Type switch
+            Question question;
+            switch (dto.Type)
             {
-                QuestionType.FiveStar => new FiveStarQuestion
-                {
-                    Id = id,
-                    Title = dto.Title,
-                    MinValue = dto.MinValue ?? 1,
-                    MaxValue = dto.MaxValue ?? 5
-                },
-                QuestionType.MultiSelect => new MultiSelectQuestion
-                {
-                    Id = id,
-                    Title = dto.Title,
-                    Options = dto.Options?.Count >= 2
-                        ? dto.Options
-                        : throw new ArgumentException("At least 2 options required.")
-                },
-                QuestionType.SingleSelect => new SingleSelectQuestion
-                {
-                    Id = id,
-                    Title = dto.Title,
-                    Options = dto.Options?.Count >= 2
-                        ? dto.Options
-                        : throw new ArgumentException("At least 2 options required.")
-                },
-                _ => throw new ArgumentException("Unsupported question type.")
-            };
+                case QuestionType.FiveStar:
+                    int min = dto.MinValue ?? 1;
+                    int max = dto.MaxValue ?? 5;
 
+                    if (min < 1 || max > 10 || min >= max)
+                        throw new ArgumentException("5-Star range must be between 1 and 10, and MinValue < MaxValue");
+
+                    question = new FiveStarQuestion
+                    {
+                        Id = id,
+                        Title = dto.Title,
+                        MinValue = min,
+                        MaxValue = max
+                    };
+                    break;
+
+                case QuestionType.MultiSelect:
+                    if (dto.Options == null || dto.Options.Count < 2)
+                        throw new ArgumentException("Multi-select question requires at least 2 options.");
+
+                    question = new MultiSelectQuestion
+                    {
+                        Id = id,
+                        Title = dto.Title,
+                        Options = dto.Options
+                    };
+                    break;
+
+                case QuestionType.SingleSelect:
+                    if (dto.Options == null || dto.Options.Count < 2)
+                        throw new ArgumentException("Single-select question requires at least 2 options.");
+
+                    question = new SingleSelectQuestion
+                    {
+                        Id = id,
+                        Title = dto.Title,
+                        Options = dto.Options
+                    };
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(dto.Type), "Unsupported question type.");
+            }
             await SaveQuestionToFileAsync(question);
         }
 
