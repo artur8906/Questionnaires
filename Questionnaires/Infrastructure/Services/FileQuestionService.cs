@@ -67,30 +67,7 @@ namespace Infrastructure.Services
                 default:
                     throw new ArgumentOutOfRangeException(nameof(dto.Type), "Unsupported question type.");
             }
-            await SaveQuestionToFileAsync(question);
-        }
-
-        private async Task SaveQuestionToFileAsync(Question question)
-        {
-             var settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-                Formatting = Formatting.Indented
-            };
-
-            List<Question> questions;
-            if (File.Exists(_questionsFilePath))
-            {
-                var existingData = await File.ReadAllTextAsync(_questionsFilePath);
-                questions = JsonConvert.DeserializeObject<List<Question>>(existingData, settings)?? new List<Question>();
-            }
-            else
-            {
-                questions = new List<Question>();
-            }
-            questions.Add(question);
-            var jsonData = JsonConvert.SerializeObject(questions, settings);
-            await File.WriteAllTextAsync(_questionsFilePath, jsonData);
+             await SaveItemToFileAsync(question, _questionsFilePath);  
         }
 
         public async Task SubmitResponseAsync(Guid questionId, SubmitResponseDto dto)
@@ -116,31 +93,36 @@ namespace Infrastructure.Services
                 _ => throw new InvalidOperationException("Unsupported question type.")
             };
 
-            await SaveResponseToFileAsync(response);
+            await SaveItemToFileAsync(response,_responsesFilePath);
 }
 
-        private async Task SaveResponseToFileAsync(QuestionResponse response)
+        private async Task SaveItemToFileAsync<T>(T item, string filePath)
         {
-
             var settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
                 Formatting = Formatting.Indented
             };
 
-            List<QuestionResponse> responses;
-            if (File.Exists(_responsesFilePath))
+            List<T> items;
+            // Read existing data, if any
+            if (File.Exists(filePath))
             {
-                var existingData = await File.ReadAllTextAsync(_responsesFilePath);
-                responses = JsonConvert.DeserializeObject<List<QuestionResponse>>(existingData, settings) ?? new List<QuestionResponse>();
+                var existingData = await File.ReadAllTextAsync(filePath);
+                items = JsonConvert.DeserializeObject<List<T>>(existingData, settings)
+                        ?? new List<T>();
             }
             else
             {
-                responses = new List<QuestionResponse>();
+                items = new List<T>();
             }
-            responses.Add(response);
-            var jsonData = JsonConvert.SerializeObject(responses, settings);
-            await File.WriteAllTextAsync(_responsesFilePath, jsonData);
+
+            // Add the new item
+            items.Add(item);
+
+            // Serialize and write to file
+            var jsonData = JsonConvert.SerializeObject(items, settings);
+            await File.WriteAllTextAsync(filePath, jsonData);
         }
 
         public async Task<List<Question>> GetAllQuestionsAsync()
