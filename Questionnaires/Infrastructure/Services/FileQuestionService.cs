@@ -96,7 +96,7 @@ namespace Infrastructure.Services
             await SaveItemToFileAsync(response,_responsesFilePath);
 }
 
-        private async Task SaveItemToFileAsync<T>(T item, string filePath)
+        private async Task SaveItemToFileAsync<T>(T item, string filePath) where T : IHasId
         {
             var settings = new JsonSerializerSettings
             {
@@ -109,14 +109,18 @@ namespace Infrastructure.Services
             if (File.Exists(filePath))
             {
                 var existingData = await File.ReadAllTextAsync(filePath);
-                items = JsonConvert.DeserializeObject<List<T>>(existingData, settings)
-                        ?? new List<T>();
+                items = JsonConvert.DeserializeObject<List<T>>(existingData, settings)?? new List<T>();
             }
             else
             {
                 items = new List<T>();
             }
 
+            bool alreadyExists = items.Any(existingItem => existingItem.Id == item.Id);
+            if (alreadyExists)
+            {
+                throw new InvalidOperationException($"Item with ID {item.Id} already exists in {filePath}.");
+            }
             // Add the new item
             items.Add(item);
 
