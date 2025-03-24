@@ -2,39 +2,42 @@ using Core.Interfaces;
 using Infrastructure.Services;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.Configure<QuestionFileSettings>(
-    builder.Configuration.GetSection("QuestionFileSettings"));
-// Add services to the container.
-builder.Services.AddSingleton<IQuestionService>(provider =>
+
+public class Program
 {
-    var env = provider.GetRequiredService<IWebHostEnvironment>();
-    var settings = provider.GetRequiredService<IOptions<QuestionFileSettings>>().Value;
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-    var questionsPath = Path.Combine(env.ContentRootPath, settings.QuestionsFilePath);
-    var responsesPath = Path.Combine(env.ContentRootPath, settings.ResponsesFilePath);
+        builder.Services.Configure<QuestionFileSettings>(
+            builder.Configuration.GetSection("QuestionFileSettings"));
 
-    return new FileQuestionService(questionsPath, responsesPath);
-});
-builder.Services.AddControllers();
+        builder.Services.AddSingleton<IQuestionService>(provider =>
+        {
+            var env = provider.GetRequiredService<IWebHostEnvironment>();
+            var settings = provider.GetRequiredService<IOptions<QuestionFileSettings>>().Value;
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+            var questionsPath = Path.Combine(env.ContentRootPath, settings.QuestionsFilePath);
+            var responsesPath = Path.Combine(env.ContentRootPath, settings.ResponsesFilePath);
 
-var app = builder.Build();
+            return new FileQuestionService(questionsPath, responsesPath);
+        });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseAuthorization();
+        app.MapControllers();
+        app.Run();
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
-

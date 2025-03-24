@@ -29,5 +29,15 @@ namespace WepApi.Controllers
             await _questionService.SubmitResponseAsync(id, dto);
             return Ok();
         }
-      } 
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetQuestionById(Guid id)
+        {
+            var question = await _questionService.GetQuestionByIdAsync(id);
+
+            if (question == null)
+                return NotFound();
+
+            return Ok(question);
+        }
+    } 
     }

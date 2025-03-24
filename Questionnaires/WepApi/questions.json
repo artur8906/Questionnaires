@@ -1,9 +1,9 @@
 [
   {
     "$type": "Core.Entities.FiveStarQuestion, Core",
-    "MinValue": 0,
-    "MaxValue": 0,
-    "Id": "8b20130f-b2f2-41fd-b609-d2414e44a38f",
+    "MinValue": 1,
+    "MaxValue": 6,
+    "Id": "08ca1d7f-02aa-4c27-805d-b7d1d21f9ee9",
     "Title": "string",
     "Type": 0
   },
@@ -13,8 +13,84 @@
       "string",
       "string2"
     ],
-    "Id": "1a20130f-b2f2-41fd-b609-d2414e44a40f",
+    "Id": "08ca1d7f-02aa-4c27-805d-b7d1d21f9ee8",
     "Title": "string",
     "Type": 1
+  },
+  {
+    "$type": "Core.Entities.SingleSelectQuestion, Core",
+    "Options": [
+      "string",
+      "string2"
+    ],
+    "Id": "07ca1d7f-02aa-4c27-805d-b7d1d21f9ee8",
+    "Title": "string",
+    "Type": 2
+  },
+  {
+    "$type": "Core.Entities.MultiSelectQuestion, Core",
+    "Options": [
+      "string",
+      "string2"
+    ],
+    "Id": "ad3a384c-6e84-4860-9fa2-ccf3d595d95f",
+    "Title": "string",
+    "Type": 1
+  },
+  {
+    "$type": "Core.Entities.FiveStarQuestion, Core",
+    "MinValue": 1,
+    "MaxValue": 5,
+    "Id": "5bf239ed-254a-4e3d-923c-0dac233434db",
+    "Title": "FiveStar Test",
+    "Type": 0
+  },
+  {
+    "$type": "Core.Entities.FiveStarQuestion, Core",
+    "MinValue": 1,
+    "MaxValue": 5,
+    "Id": "90076347-3906-499c-87aa-97ab32d9a35a",
+    "Title": "FiveStar Test",
+    "Type": 0
+  },
+  {
+    "$type": "Core.Entities.FiveStarQuestion, Core",
+    "MinValue": 1,
+    "MaxValue": 5,
+    "Id": "baac9b35-57c3-4406-a720-9abc2e7044e9",
+    "Title": "FiveStar Test",
+    "Type": 0
+  },
+  {
+    "$type": "Core.Entities.FiveStarQuestion, Core",
+    "MinValue": 1,
+    "MaxValue": 5,
+    "Id": "b951f1c9-609c-4e27-8668-9a0cd028a129",
+    "Title": "FiveStar Test",
+    "Type": 0
+  },
+  {
+    "$type": "Core.Entities.FiveStarQuestion, Core",
+    "MinValue": 1,
+    "MaxValue": 5,
+    "Id": "3fd8bb89-15e6-4efd-923b-aa165be348df",
+    "Title": "FiveStar Test",
+    "Type": 0
+  },
+  {
+    "$type": "Core.Entities.FiveStarQuestion, Core",
+    "MinValue": 1,
+    "MaxValue": 5,
+    "Id": "fa4eeeff-8b23-4d03-90a2-0a444cdf4d04",
+    "Title": "FiveStar Test",
+    "Type": 0
+  },
+  {
+    "$type": "Core.Entities.FiveStarQuestion, Core",
+    "MinValue": 1,
+    "MaxValue": 5,
+    "Id": "2411d47a-4eeb-46aa-9d17-3d1e93988979",
+    "Title": "FiveStar Test",
+    "Type": 0
   }
 ]

@@ -1,0 +1,32 @@
+[
+  {
+    "$type": "Core.Entities.MultiSelectQuestionResponse, Core",
+    "SelectedOptions": [
+      "string",
+      "string2"
+    ],
+    "Id": "cb47d6f3-5f3b-4554-97e3-d8600800af93",
+    "QuestionId": "8b20130f-b2f2-41fd-b609-d2414e44a38f",
+    "RespondentId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  },
+  {
+    "$type": "Core.Entities.MultiSelectQuestionResponse, Core",
+    "SelectedOptions": [
+      "string",
+      "string2"
+    ],
+    "Id": "946b0715-a4c7-436a-a788-b545c15e68fe",
+    "QuestionId": "8b20130f-b2f2-41fd-b609-d2414e44a38f",
+    "RespondentId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  },
+  {
+    "$type": "Core.Entities.MultiSelectQuestionResponse, Core",
+    "SelectedOptions": [
+      "string",
+      "string2"
+    ],
+    "Id": "1334ec21-9d5a-4238-8c67-93a18c1d54f3",
+    "QuestionId": "8b20130f-b2f2-41fd-b609-d2414e44a38f",
+    "RespondentId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+]

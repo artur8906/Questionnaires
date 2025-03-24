@@ -76,25 +76,40 @@ namespace Infrastructure.Services
 
             var id = Guid.NewGuid();
 
-            QuestionResponse response = question.Type switch
+            QuestionResponse response;
+
+            switch (question)
             {
-                QuestionType.FiveStar => dto.RatingValue is null
-                    ? throw new ArgumentException("Rating is required.")
-                    : new FiveStarQuestionRespons(id, questionId, dto.RespondentId, dto.RatingValue.Value),
+                case FiveStarQuestion fiveStar:
+                    if (dto.RatingValue is null)
+                        throw new ArgumentException("Rating is required.");
+                    if (dto.RatingValue < fiveStar.MinValue || dto.RatingValue > fiveStar.MaxValue)
+                        throw new ArgumentException($"Rating must be between {fiveStar.MinValue} and {fiveStar.MaxValue}.");
+                    response = new FiveStarQuestionRespons(id, questionId, dto.RespondentId, dto.RatingValue.Value);
+                    break;
 
-                QuestionType.MultiSelect => dto.SelectedOptions is null || dto.SelectedOptions.Count < 2
-                    ? throw new ArgumentException("At least 2 options are required.")
-                    : new MultiSelectQuestionResponse(id, questionId, dto.RespondentId, dto.SelectedOptions),
+                case MultiSelectQuestion multiSelect:
+                    if (dto.SelectedOptions is null || dto.SelectedOptions.Count < 2)
+                        throw new ArgumentException("At least 2 options are required.");
+                    if (!dto.SelectedOptions.All(opt => multiSelect.Options.Contains(opt)))
+                        throw new ArgumentException("One or more selected options are not valid.");
+                    response = new MultiSelectQuestionResponse(id, questionId, dto.RespondentId, dto.SelectedOptions);
+                    break;
 
-                QuestionType.SingleSelect => string.IsNullOrWhiteSpace(dto.SelectedOption)
-                    ? throw new ArgumentException("Option is required.")
-                    : new SingleSelectQuestionResponse(id, questionId, dto.RespondentId, dto.SelectedOption),
+                case SingleSelectQuestion singleSelect:
+                    if (string.IsNullOrWhiteSpace(dto.SelectedOption))
+                        throw new ArgumentException("Selected option is required.");
+                    if (!singleSelect.Options.Contains(dto.SelectedOption))
+                        throw new ArgumentException("Selected option is not valid.");
+                    response = new SingleSelectQuestionResponse(id, questionId, dto.RespondentId, dto.SelectedOption);
+                    break;
 
-                _ => throw new InvalidOperationException("Unsupported question type.")
-            };
+                default:
+                    throw new InvalidOperationException("Unsupported question type.");
+            }
 
-            await SaveItemToFileAsync(response,_responsesFilePath);
-}
+            await SaveItemToFileAsync(response, _responsesFilePath);
+        }
 
         private async Task SaveItemToFileAsync<T>(T item, string filePath) where T : IHasId
         {
@@ -148,5 +163,6 @@ namespace Infrastructure.Services
             var all = await GetAllQuestionsAsync();
             return all.FirstOrDefault(q => q.Id == id);
         }
+
     }
 }
