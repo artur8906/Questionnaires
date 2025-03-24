@@ -2,14 +2,9 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs
-/Questionnaires/.vs/Questionnaires
 /Questionnaires/Core/bin/Debug/net8.0
-/Questionnaires/Core/obj/Debug/net8.0
-/Questionnaires/Infrastructure/obj
-/Questionnaires/WepApi/bin/Debug/net8.0
-/Questionnaires/WepApi/obj/Debug/net8.0
-/Questionnaires/WepApi/obj
 /Questionnaires/Infrastructure/bin/Debug/net8.0
-/Questionnaires/Tests/obj
+/Questionnaires/Infrastructure/bin/Debug/net8.0/Core.dll
+/Questionnaires/Infrastructure/obj/Debug/net8.0
 /Questionnaires/Tests/bin/Debug/net8.0
+/Questionnaires/Tests/obj
